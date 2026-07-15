@@ -57,9 +57,22 @@ function sheetsConfigured(){
 
 function csvUrlCandidates(gid){
   return [
-    `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`,
-    `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.spreadsheetId}/export?format=csv&gid=${gid}`
+    // /export primero: exporta el valor "tal cual se ve" en la celda, sin envolver fechas
+    // en el formato especial de Google (que /gviz sí hace y rompe el parseo).
+    `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.spreadsheetId}/export?format=csv&gid=${gid}`,
+    `https://docs.google.com/spreadsheets/d/${SHEETS_CONFIG.spreadsheetId}/gviz/tq?tqx=out:csv&gid=${gid}`
   ];
+}
+
+// Si una celda quedó tipeada como fecha en Sheets, /gviz la exporta como "Date(2026,10,3,9,0,0)"
+// (mes en base 0) en vez de texto normal. Esto la vuelve a dejar en formato ISO usable.
+function unwrapGvizDate(value){
+  const m = String(value).trim().match(/^Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)$/);
+  if(!m) return value;
+  const [, y, mo, d, h, mi, s] = m;
+  const pad = n => String(n).padStart(2, '0');
+  const dt = new Date(Number(y), Number(mo), Number(d), Number(h || 0), Number(mi || 0), Number(s || 0));
+  return `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}:${pad(dt.getSeconds())}`;
 }
 
 function parseCsv(text){
@@ -107,7 +120,7 @@ async function fetchSheet(key){
 
 function rowsToObjects(rows){
   const headers = rows[0].map(h => h.trim());
-  return rows.slice(1).map(r => Object.fromEntries(headers.map((h,i) => [h, (r[i] ?? '').trim()])));
+  return rows.slice(1).map(r => Object.fromEntries(headers.map((h,i) => [h, unwrapGvizDate((r[i] ?? '').trim())])));
 }
 function kvRowsToObject(rows){
   return Object.fromEntries(rowsToObjects(rows).map(o => [o.Campo, o.Valor]));
