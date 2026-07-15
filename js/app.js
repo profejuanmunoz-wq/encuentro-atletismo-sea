@@ -11,16 +11,16 @@ const REFRESH_MS = 25000; // cada cuánto se re-consultan los datos ("en vivo")
 // gids: haz clic en cada pestaña y copia el número después de '#gid=' en la URL
 // Mientras spreadsheetId diga 'PON_AQUI...', la app usa data/data.json local.
 const SHEETS_CONFIG = {
-  spreadsheetId: 'PON_AQUI_EL_ID_DE_TU_HOJA',
+  spreadsheetId: '1eCKmNfi4gXksNteiMGsBD0FvYw7BJo2U',
   gids: {
-    evento: 'PON_AQUI_EL_GID',
-    colegios: 'PON_AQUI_EL_GID',
-    programa: 'PON_AQUI_EL_GID',
-    enVivo: 'PON_AQUI_EL_GID',
-    enVivoSiguientes: 'PON_AQUI_EL_GID',
-    enVivoFeed: 'PON_AQUI_EL_GID',
-    medallero: 'PON_AQUI_EL_GID',
-    fotos: 'PON_AQUI_EL_GID'
+    evento: '942667199',
+    colegios: '1147733201',
+    programa: '338808942',
+    enVivo: '1925098239',
+    enVivoSiguientes: '62098836',
+    enVivoFeed: '701881838',
+    medallero: '1945758813',
+    fotos: '2035909068'
   }
 };
 // -----------------------------------------------------
