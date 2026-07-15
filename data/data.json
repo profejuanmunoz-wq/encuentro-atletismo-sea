@@ -1,0 +1,92 @@
+{
+  "_comentario": "Este es el ÚNICO archivo que necesitas editar para actualizar la app: fechas, programa, resultados y medallero. Edítalo directo en GitHub (botón del lápiz) y los cambios se publican solos en 1-2 minutos. No toques index.html, css/ ni js/ a menos que quieras cambiar el diseño.",
+
+  "evento": {
+    "nombre": "VI Encuentro Nacional de Atletismo",
+    "organizacion": "Sistema Educativo Adventista - Chile",
+    "edicion": "2026",
+    "fechaInicio": "2026-11-03T09:00:00-03:00",
+    "fechaTexto": "3 al 5 de noviembre de 2026",
+    "lugar": "Estadio Municipal Alcaldesa Ester Roa Rebolledo",
+    "direccion": "Av. Ignacio Collao 481, esq. Tegualda, Concepción, Región del Biobío",
+    "mapsQuery": "Estadio Municipal Alcaldesa Ester Roa Rebolledo, Concepción, Chile",
+    "mapsDirLink": "https://www.google.com/maps/dir/?api=1&destination=Estadio+Municipal+Alcaldesa+Ester+Roa+Rebolledo+Concepci%C3%B3n+Chile",
+    "comoLlegar": "Paradero más cercano: \"Collao (Estadio Ester Roa)\", a 2 min caminando. Buses: 14, 21, 23, 24, 40, 70, entre otros.",
+    "_nota_fecha": "Ajusta el año/hora si corresponde — se usó 2026 porque no se especificó."
+  },
+
+  "colegios": [
+    { "id": "asc", "nombre": "Fundación Educacional Arnaldo Salamanca Cid", "corto": "Salamanca Cid", "color": "#0B3861" },
+    { "id": "sdg", "nombre": "Fundación Educacional Sanders de Groot", "corto": "Sanders de Groot", "color": "#AE2825" },
+    { "id": "fhw", "nombre": "Fundación Educacional Francisco H. Westphal", "corto": "F. H. Westphal", "color": "#D69A00" },
+    { "id": "gcr", "nombre": "Fundación Educacional Graciela Carvajal Rojas", "corto": "Graciela Carvajal", "color": "#4C8C4A" },
+    { "id": "jt",  "nombre": "Fundación Educacional José Torres", "corto": "José Torres", "color": "#1B7DAE" },
+    { "id": "mvo", "nombre": "Fundación Educacional Mario Veloso Oses", "corto": "Mario Veloso", "color": "#F18427" },
+    { "id": "jo",  "nombre": "Fundación Educacional Julián Ocampo", "corto": "Julián Ocampo", "color": "#6B4A8A" }
+  ],
+
+  "_comentario_programa": "EJEMPLO — reemplaza 'hora', 'prueba', 'categoria', 'genero' y 'estado' con tu programación real. estado puede ser: 'programado', 'en_curso' o 'finalizado'.",
+  "programa": [
+    {
+      "dia": "Día 1",
+      "fecha": "Martes 3 de noviembre",
+      "bloques": [
+        { "hora": "09:00", "prueba": "Ceremonia inaugural", "categoria": "General", "genero": "", "estado": "programado" },
+        { "hora": "10:00", "prueba": "100 metros planos — series", "categoria": "Sub-14", "genero": "Damas", "estado": "programado" },
+        { "hora": "10:20", "prueba": "100 metros planos — series", "categoria": "Sub-14", "genero": "Varones", "estado": "programado" },
+        { "hora": "10:45", "prueba": "Salto largo — clasificatoria", "categoria": "Sub-16", "genero": "Damas", "estado": "programado" },
+        { "hora": "11:15", "prueba": "Lanzamiento de bala", "categoria": "Sub-16", "genero": "Varones", "estado": "programado" },
+        { "hora": "12:00", "prueba": "800 metros planos — series", "categoria": "Sub-18", "genero": "Damas", "estado": "programado" },
+        { "hora": "15:00", "prueba": "400 metros vallas — series", "categoria": "Sub-18", "genero": "Varones", "estado": "programado" }
+      ]
+    },
+    {
+      "dia": "Día 2",
+      "fecha": "Miércoles 4 de noviembre",
+      "bloques": [
+        { "hora": "09:30", "prueba": "Salto alto — final", "categoria": "Sub-14", "genero": "Damas", "estado": "programado" },
+        { "hora": "10:00", "prueba": "200 metros planos — semifinal", "categoria": "Sub-16", "genero": "Varones", "estado": "programado" },
+        { "hora": "10:30", "prueba": "Lanzamiento de disco", "categoria": "Sub-18", "genero": "Damas", "estado": "programado" },
+        { "hora": "11:00", "prueba": "1500 metros planos — final", "categoria": "Sub-18", "genero": "Varones", "estado": "programado" },
+        { "hora": "15:30", "prueba": "Salto triple — final", "categoria": "Sub-16", "genero": "Damas", "estado": "programado" },
+        { "hora": "16:15", "prueba": "400 metros planos — final", "categoria": "Sub-14", "genero": "Varones", "estado": "programado" }
+      ]
+    },
+    {
+      "dia": "Día 3",
+      "fecha": "Jueves 5 de noviembre",
+      "bloques": [
+        { "hora": "09:30", "prueba": "100 metros planos — final", "categoria": "Sub-14", "genero": "Damas", "estado": "programado" },
+        { "hora": "09:50", "prueba": "100 metros planos — final", "categoria": "Sub-16", "genero": "Varones", "estado": "programado" },
+        { "hora": "10:30", "prueba": "Posta 4x100", "categoria": "Sub-18", "genero": "Damas", "estado": "programado" },
+        { "hora": "11:00", "prueba": "Posta 4x100", "categoria": "Sub-18", "genero": "Varones", "estado": "programado" },
+        { "hora": "16:00", "prueba": "Premiación general", "categoria": "General", "genero": "", "estado": "programado" },
+        { "hora": "17:00", "prueba": "Ceremonia de clausura", "categoria": "General", "genero": "", "estado": "programado" }
+      ]
+    }
+  ],
+
+  "_comentario_envivo": "activo:false muestra 'aún no comienza'. Cuando parta el encuentro, cambia a true y completa actual/siguientes/feed a mano durante la jornada.",
+  "enVivo": {
+    "activo": false,
+    "actual": { "hora": "", "prueba": "", "categoria": "", "genero": "" },
+    "siguientes": [],
+    "feed": []
+  },
+
+  "_comentario_medallero": "Pon el conteo real de medallas por colegio; el orden se calcula solo (oro, luego plata, luego bronce).",
+  "medallero": [
+    { "id": "asc", "oro": 0, "plata": 0, "bronce": 0 },
+    { "id": "sdg", "oro": 0, "plata": 0, "bronce": 0 },
+    { "id": "fhw", "oro": 0, "plata": 0, "bronce": 0 },
+    { "id": "gcr", "oro": 0, "plata": 0, "bronce": 0 },
+    { "id": "jt",  "oro": 0, "plata": 0, "bronce": 0 },
+    { "id": "mvo", "oro": 0, "plata": 0, "bronce": 0 },
+    { "id": "jo",  "oro": 0, "plata": 0, "bronce": 0 }
+  ],
+
+  "_comentario_fotos": "Sube la foto a Google Drive, compártela como 'Cualquiera con el enlace - Lector', copia el enlace y pégalo tal cual en 'url'. La app lo convierte solo en imagen visible.",
+  "fotos": [],
+
+  "ultimaActualizacion": "2026-07-07T00:00:00-03:00"
+}

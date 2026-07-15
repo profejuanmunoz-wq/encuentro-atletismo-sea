@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="es-CL">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>VI Encuentro Nacional de Atletismo — SEA</title>
+<meta name="description" content="App oficial del VI Encuentro Nacional de Atletismo, Sistema Educativo Adventista - Chile. Programación, resultados en vivo, medallero y ubicación.">
+
+<meta name="theme-color" content="#0B3861">
+<link rel="manifest" href="manifest.json">
+
+<link rel="icon" href="icons/favicon-32.png" sizes="32x32">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Atletismo SEA">
+<meta name="mobile-web-app-capable" content="yes">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+<div class="flame-bar" aria-hidden="true"></div>
+
+<header class="topbar">
+  <img src="icons/emblem-96.png" alt="" class="topbar-emblem">
+  <div class="topbar-text">
+    <span class="topbar-eyebrow">SEA · <span id="tb-edicion">2026</span></span>
+    <span class="topbar-title" id="tb-nombre">VI Encuentro Nacional de Atletismo</span>
+  </div>
+  <span class="live-pill" id="live-pill" hidden>● EN VIVO</span>
+</header>
+<div class="source-warning" id="source-warning" hidden></div>
+
+<main id="views">
+
+  <!-- ================= INICIO ================= -->
+  <section class="view" id="view-inicio" data-view>
+    <div class="hero">
+      <img src="img/logo-full.png" alt="VI Encuentro Nacional de Atletismo — Sistema Educativo Adventista Chile" class="hero-logo">
+      <p class="hero-org" id="hero-org">Sistema Educativo Adventista - Chile</p>
+      <p class="hero-fecha" id="hero-fecha">3 al 5 de noviembre de 2026</p>
+      <p class="hero-lugar" id="hero-lugar">Estadio Municipal Alcaldesa Ester Roa Rebolledo, Concepción</p>
+    </div>
+
+    <div class="card countdown-card" id="countdown-card">
+      <p class="card-label">Comienza en</p>
+      <div class="countdown" id="countdown">
+        <div class="cd-unit"><span class="cd-num" id="cd-d">00</span><span class="cd-lbl">días</span></div>
+        <div class="cd-unit"><span class="cd-num" id="cd-h">00</span><span class="cd-lbl">hrs</span></div>
+        <div class="cd-unit"><span class="cd-num" id="cd-m">00</span><span class="cd-lbl">min</span></div>
+        <div class="cd-unit"><span class="cd-num" id="cd-s">00</span><span class="cd-lbl">seg</span></div>
+      </div>
+      <p class="countdown-live" id="countdown-live" hidden>El encuentro está en curso 🏁</p>
+    </div>
+
+    <div class="card live-card" id="home-live-card" hidden>
+      <p class="card-label">Compitiendo ahora</p>
+      <p class="live-prueba" id="home-live-prueba">—</p>
+      <p class="live-meta" id="home-live-meta">—</p>
+      <button class="btn-link" data-goto="en-vivo">Ver en vivo →</button>
+    </div>
+
+    <div class="stats-row">
+      <div class="stat"><span class="stat-num" id="stat-colegios">7</span><span class="stat-lbl">colegios</span></div>
+      <div class="stat"><span class="stat-num" id="stat-dias">3</span><span class="stat-lbl">jornadas</span></div>
+      <div class="stat"><span class="stat-num" id="stat-pruebas">0</span><span class="stat-lbl">pruebas</span></div>
+    </div>
+
+    <div class="quicklinks">
+      <button class="quicklink" data-goto="programa">
+        <span class="ql-title">Programación</span>
+        <span class="ql-sub">Ver horario por jornada</span>
+      </button>
+      <button class="quicklink" data-goto="medallas">
+        <span class="ql-title">Medallero</span>
+        <span class="ql-sub">Ranking por colegio</span>
+      </button>
+      <button class="quicklink" data-goto="ubicacion">
+        <span class="ql-title">Cómo llegar</span>
+        <span class="ql-sub">Mapa y transporte</span>
+      </button>
+    </div>
+  </section>
+
+  <!-- ================= PROGRAMA ================= -->
+  <section class="view" id="view-programa" data-view hidden>
+    <h1 class="view-title">Programación</h1>
+    <div class="day-tabs" id="day-tabs"></div>
+    <div id="programa-lista" class="prueba-lista"></div>
+  </section>
+
+  <!-- ================= EN VIVO ================= -->
+  <section class="view" id="view-en-vivo" data-view hidden>
+    <h1 class="view-title">En vivo</h1>
+    <div id="envivo-contenido"></div>
+  </section>
+
+  <!-- ================= MEDALLAS ================= -->
+  <section class="view" id="view-medallas" data-view hidden>
+    <h1 class="view-title">Medallero</h1>
+    <p class="view-sub" id="medallas-nota">El medallero se actualizará durante el encuentro.</p>
+    <table class="medal-table">
+      <thead>
+        <tr>
+          <th class="col-colegio">Colegio</th>
+          <th title="Oro">🥇</th>
+          <th title="Plata">🥈</th>
+          <th title="Bronce">🥉</th>
+          <th>Total</th>
+        </tr>
+      </thead>
+      <tbody id="medal-body"></tbody>
+    </table>
+  </section>
+
+  <!-- ================= UBICACIÓN ================= -->
+  <section class="view" id="view-ubicacion" data-view hidden>
+    <h1 class="view-title">Ubicación</h1>
+    <div class="card">
+      <p class="ubic-lugar" id="ubic-lugar">Estadio Municipal Alcaldesa Ester Roa Rebolledo</p>
+      <p class="ubic-dir" id="ubic-dir">Av. Ignacio Collao 481, Concepción</p>
+      <a class="btn-primary" id="ubic-btn" href="#" target="_blank" rel="noopener">Cómo llegar</a>
+    </div>
+    <div class="map-wrap">
+      <iframe id="map-frame" src="" width="100%" height="320" style="border:0" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+    </div>
+    <div class="card">
+      <p class="card-label">Transporte público</p>
+      <p class="ubic-transporte" id="ubic-transporte">—</p>
+    </div>
+  </section>
+
+  <!-- ================= FOTOS ================= -->
+  <section class="view" id="view-fotos" data-view hidden>
+    <h1 class="view-title">Fotos</h1>
+    <div id="fotos-grid" class="fotos-grid"></div>
+    <p class="empty-state" id="fotos-empty" hidden>Las fotos se irán publicando durante y después del encuentro.</p>
+  </section>
+
+</main>
+
+<nav class="bottomnav" id="bottomnav">
+  <button class="nav-item is-active" data-goto="inicio">
+    <svg viewBox="0 0 24 24" class="nav-icon"><path d="M4 11.5 12 4l8 7.5V20a1 1 0 0 1-1 1h-4v-6H9v6H5a1 1 0 0 1-1-1Z"/></svg>
+    <span>Inicio</span>
+  </button>
+  <button class="nav-item" data-goto="programa">
+    <svg viewBox="0 0 24 24" class="nav-icon"><rect x="4" y="5" width="16" height="15" rx="1.5"/><path d="M4 9.5h16M8 3v4M16 3v4"/></svg>
+    <span>Programa</span>
+  </button>
+  <button class="nav-item" data-goto="en-vivo">
+    <svg viewBox="0 0 24 24" class="nav-icon"><circle cx="12" cy="12" r="3.2"/><path d="M5.6 5.6a9 9 0 0 0 0 12.8M18.4 5.6a9 9 0 0 1 0 12.8M8.5 8.5a4.6 4.6 0 0 0 0 7M15.5 8.5a4.6 4.6 0 0 1 0 7"/></svg>
+    <span>En vivo</span>
+  </button>
+  <button class="nav-item" data-goto="medallas">
+    <svg viewBox="0 0 24 24" class="nav-icon"><circle cx="12" cy="15" r="5.5"/><path d="M8.5 10 5 3h4l3 6M15.5 10 19 3h-4l-3 6"/></svg>
+    <span>Medallas</span>
+  </button>
+  <button class="nav-item" data-goto="ubicacion">
+    <svg viewBox="0 0 24 24" class="nav-icon"><path d="M12 21s7-6.4 7-11.5A7 7 0 0 0 5 9.5C5 14.6 12 21 12 21Z"/><circle cx="12" cy="9.5" r="2.3"/></svg>
+    <span>Ubicación</span>
+  </button>
+  <button class="nav-item" data-goto="fotos">
+    <svg viewBox="0 0 24 24" class="nav-icon"><rect x="3.5" y="5.5" width="17" height="13" rx="1.5"/><circle cx="8.5" cy="10.5" r="1.6"/><path d="m5 17 4.5-4.5L12 15l3-3 4 4"/></svg>
+    <span>Fotos</span>
+  </button>
+</nav>
+
+<script src="js/app.js"></script>
+</body>
+</html>
