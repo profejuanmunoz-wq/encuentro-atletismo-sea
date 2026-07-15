@@ -1,5 +1,5 @@
 {
-  "_comentario": "Este es el ÚNICO archivo que necesitas editar para actualizar la app: fechas, programa, resultados y medallero. Edítalo directo en GitHub (botón del lápiz) y los cambios se publican solos en 1-2 minutos. No toques index.html, css/ ni js/ a menos que quieras cambiar el diseño.",
+  "_comentario": "Este es el respaldo local que usa la app SOLO si no logra conectarse a Google Sheets. La edición real del día a día se hace en la planilla de Google Sheets, no aquí.",
 
   "evento": {
     "nombre": "VI Encuentro Nacional de Atletismo",
@@ -12,6 +12,7 @@
     "mapsQuery": "Estadio Municipal Alcaldesa Ester Roa Rebolledo, Concepción, Chile",
     "mapsDirLink": "https://www.google.com/maps/dir/?api=1&destination=Estadio+Municipal+Alcaldesa+Ester+Roa+Rebolledo+Concepci%C3%B3n+Chile",
     "comoLlegar": "Paradero más cercano: \"Collao (Estadio Ester Roa)\", a 2 min caminando. Buses: 14, 21, 23, 24, 40, 70, entre otros.",
+    "programaVisible": true,
     "_nota_fecha": "Ajusta el año/hora si corresponde — se usó 2026 porque no se especificó."
   },
 
@@ -74,16 +75,11 @@
     "feed": []
   },
 
-  "_comentario_medallero": "Pon el conteo real de medallas por colegio; el orden se calcula solo (oro, luego plata, luego bronce).",
-  "medallero": [
-    { "id": "asc", "oro": 0, "plata": 0, "bronce": 0 },
-    { "id": "sdg", "oro": 0, "plata": 0, "bronce": 0 },
-    { "id": "fhw", "oro": 0, "plata": 0, "bronce": 0 },
-    { "id": "gcr", "oro": 0, "plata": 0, "bronce": 0 },
-    { "id": "jt",  "oro": 0, "plata": 0, "bronce": 0 },
-    { "id": "mvo", "oro": 0, "plata": 0, "bronce": 0 },
-    { "id": "jo",  "oro": 0, "plata": 0, "bronce": 0 }
-  ],
+  "_comentario_resultados": "Un renglón por cada puesto (1, 2 o 3) de cada prueba. 'colegio' debe escribirse igual que la columna 'corto' de Colegios. El medallero se calcula solo a partir de esto.",
+  "resultados": [],
+
+  "_comentario_noticias": "Se muestran en Inicio, la más nueva arriba. Agrega filas nuevas al final.",
+  "noticias": [],
 
   "_comentario_fotos": "Sube la foto a Google Drive, compártela como 'Cualquiera con el enlace - Lector', copia el enlace y pégalo tal cual en 'url'. La app lo convierte solo en imagen visible.",
   "fotos": [],

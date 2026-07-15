@@ -19,15 +19,37 @@ const SHEETS_CONFIG = {
     enVivo: '1925098239',
     enVivoSiguientes: '62098836',
     enVivoFeed: '701881838',
-    medallero: '1945758813',
+    resultados: 'PON_AQUI_EL_GID',  // pestaña nueva — ver instrucciones para agregarla
+    noticias: 'PON_AQUI_EL_GID',    // pestaña nueva — ver instrucciones para agregarla
     fotos: '2035909068'
   }
 };
+// Pestañas sin las que la app no puede funcionar (si fallan, se usa el respaldo local)
+const REQUIRED_SHEET_KEYS = ['evento', 'colegios', 'programa', 'enVivo'];
 // -----------------------------------------------------
 
 let DATA = null;
 let colegiosById = {};
 let dataSource = null; // 'sheets' | 'local' — para poder diagnosticar desde la app
+let lastSyncAt = null;
+
+function timeAgo(date){
+  if(!date) return '';
+  const diffSec = Math.floor((Date.now() - date.getTime()) / 1000);
+  if(diffSec < 10) return 'justo ahora';
+  if(diffSec < 60) return `hace ${diffSec} seg`;
+  const diffMin = Math.floor(diffSec / 60);
+  if(diffMin < 60) return `hace ${diffMin} min`;
+  const diffH = Math.floor(diffMin / 60);
+  return `hace ${diffH} h`;
+}
+
+function renderUpdateBar(){
+  const text = document.getElementById('update-text');
+  if(!lastSyncAt){ text.textContent = 'Actualizando…'; return; }
+  const fuente = dataSource === 'sheets' ? '' : ' (respaldo local)';
+  text.textContent = `Actualizado ${timeAgo(lastSyncAt)}${fuente}`;
+}
 
 function sheetsConfigured(){
   return SHEETS_CONFIG.spreadsheetId && !SHEETS_CONFIG.spreadsheetId.startsWith('PON_AQUI');
@@ -64,6 +86,9 @@ function parseCsv(text){
 
 async function fetchSheet(key){
   const gid = SHEETS_CONFIG.gids[key];
+  if(!gid || String(gid).startsWith('PON_AQUI')){
+    throw new Error(`La pestaña "${key}" todavía no está configurada`);
+  }
   let lastErr;
   for(const base of csvUrlCandidates(gid)){
     try{
@@ -101,32 +126,43 @@ function groupPrograma(rows){
 }
 
 async function loadFromSheets(){
-  const keys = Object.keys(SHEETS_CONFIG.gids);
-  const rowsByKey = Object.fromEntries(
-    await Promise.all(keys.map(async k => [k, await fetchSheet(k)]))
-  );
+  const allKeys = Object.keys(SHEETS_CONFIG.gids);
+  const rowsByKey = {};
+
+  for(const k of allKeys){
+    try{
+      rowsByKey[k] = await fetchSheet(k);
+    }catch(e){
+      if(REQUIRED_SHEET_KEYS.includes(k)) throw e; // sin esto la app no puede armarse: sube el error
+      console.warn(`"${k}" no disponible todavía, se usa vacío. Motivo:`, e.message);
+      rowsByKey[k] = []; // pestaña opcional: seguimos sin ella
+    }
+  }
 
   const evento = kvRowsToObject(rowsByKey.evento);
   const enVivoKv = kvRowsToObject(rowsByKey.enVivo);
+  const toBool = (v, def) => v === undefined || v === '' ? def : String(v).trim().toUpperCase() === 'TRUE';
 
   return {
-    evento,
+    evento: {
+      ...evento,
+      programaVisible: toBool(evento.programa_visible, true)
+    },
     colegios: rowsToObjects(rowsByKey.colegios),
     programa: groupPrograma(rowsByKey.programa),
     enVivo: {
-      activo: String(enVivoKv.activo).trim().toUpperCase() === 'TRUE',
+      activo: toBool(enVivoKv.activo, false),
       actual: {
         prueba: enVivoKv.actual_prueba || '',
         categoria: enVivoKv.actual_categoria || '',
         genero: enVivoKv.actual_genero || ''
       },
-      siguientes: rowsToObjects(rowsByKey.enVivoSiguientes),
-      feed: rowsToObjects(rowsByKey.enVivoFeed)
+      siguientes: rowsByKey.enVivoSiguientes.length ? rowsToObjects(rowsByKey.enVivoSiguientes) : [],
+      feed: rowsByKey.enVivoFeed.length ? rowsToObjects(rowsByKey.enVivoFeed) : []
     },
-    medallero: rowsToObjects(rowsByKey.medallero).map(m => ({
-      id: m.id, oro: Number(m.oro) || 0, plata: Number(m.plata) || 0, bronce: Number(m.bronce) || 0
-    })),
-    fotos: rowsToObjects(rowsByKey.fotos).filter(f => f.url)
+    resultados: rowsByKey.resultados.length ? rowsToObjects(rowsByKey.resultados) : [],
+    noticias: rowsByKey.noticias.length ? rowsToObjects(rowsByKey.noticias) : [],
+    fotos: rowsByKey.fotos.length ? rowsToObjects(rowsByKey.fotos).filter(f => f.url) : []
   };
 }
 
@@ -150,12 +186,14 @@ async function loadData(){
     DATA = await loadFromLocalJson();
     dataSource = 'local-not-configured';
   }
+  lastSyncAt = new Date();
   colegiosById = Object.fromEntries(DATA.colegios.map(c => [c.id, c]));
   renderAll();
 }
 
 function renderAll(){
   renderTopbar();
+  renderUpdateBar();
   renderInicio();
   renderPrograma();
   renderEnVivo();
@@ -184,6 +222,27 @@ function renderTopbar(){
 }
 
 /* ---------------- Inicio ---------------- */
+function renderNoticias(){
+  const wrap = document.getElementById('noticias-wrap');
+  const noticias = (DATA.noticias || []).filter(n => n.titulo);
+  if(!noticias.length){ wrap.innerHTML = ''; return; }
+
+  // más reciente primero (se asume que las filas se van agregando en orden)
+  const items = noticias.slice().reverse();
+  wrap.innerHTML = `
+    <div class="card noticias-card">
+      <p class="card-label">Noticias del encuentro</p>
+      ${items.map(n => `
+        <div class="noticia-item">
+          ${n.fecha ? `<p class="noticia-fecha">${escapeHtml(n.fecha)}</p>` : ''}
+          <p class="noticia-titulo">${escapeHtml(n.titulo)}</p>
+          ${n.texto ? `<p class="noticia-texto">${escapeHtml(n.texto)}</p>` : ''}
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
 function renderInicio(){
   const { evento, enVivo, colegios, programa } = DATA;
   document.getElementById('hero-org').textContent = evento.organizacion;
@@ -191,9 +250,14 @@ function renderInicio(){
   document.getElementById('hero-lugar').textContent = evento.lugar;
 
   document.getElementById('stat-colegios').textContent = colegios.length;
-  document.getElementById('stat-dias').textContent = programa.length;
-  const totalPruebas = programa.reduce((sum, d) => sum + d.bloques.length, 0);
-  document.getElementById('stat-pruebas').textContent = totalPruebas;
+  if(evento.programaVisible){
+    document.getElementById('stat-dias').textContent = programa.length;
+    const totalPruebas = programa.reduce((sum, d) => sum + d.bloques.length, 0);
+    document.getElementById('stat-pruebas').textContent = totalPruebas;
+  }else{
+    document.getElementById('stat-dias').textContent = '—';
+    document.getElementById('stat-pruebas').textContent = '—';
+  }
 
   const liveCard = document.getElementById('home-live-card');
   if(enVivo.activo && enVivo.actual && enVivo.actual.prueba){
@@ -205,6 +269,7 @@ function renderInicio(){
     liveCard.hidden = true;
   }
 
+  renderNoticias();
   startCountdown(evento.fechaInicio);
 }
 
@@ -239,8 +304,14 @@ function startCountdown(fechaInicioISO){
 /* ---------------- Programa ---------------- */
 let diaActivo = 0;
 function renderPrograma(){
+  const wrap = document.getElementById('programa-contenido');
+  if(!DATA.evento.programaVisible){
+    wrap.innerHTML = '<p class="empty-state">La programación se está definiendo — pronto vas a poder verla aquí.</p>';
+    return;
+  }
+  wrap.innerHTML = `<div class="day-tabs" id="day-tabs"></div><div id="programa-lista" class="prueba-lista"></div>`;
+
   const tabsEl = document.getElementById('day-tabs');
-  tabsEl.innerHTML = '';
   DATA.programa.forEach((dia, i) => {
     const btn = document.createElement('button');
     btn.className = 'day-tab' + (i === diaActivo ? ' is-active' : '');
@@ -252,6 +323,13 @@ function renderPrograma(){
 }
 
 const ESTADO_LABEL = { programado: 'Programado', en_curso: 'En curso', finalizado: 'Finalizado' };
+const LUGAR_MEDALLA = { '1': '🥇', '2': '🥈', '3': '🥉' };
+
+function resultadosDe(prueba, categoria, genero){
+  return (DATA.resultados || [])
+    .filter(r => r.prueba === prueba && r.categoria === categoria && (r.genero || '') === (genero || ''))
+    .sort((a, b) => Number(a.lugar) - Number(b.lugar));
+}
 
 function renderProgramaLista(){
   const lista = document.getElementById('programa-lista');
@@ -260,7 +338,9 @@ function renderProgramaLista(){
     lista.innerHTML = '<p class="empty-state">Aún no hay pruebas cargadas para esta jornada.</p>';
     return;
   }
-  lista.innerHTML = dia.bloques.map(b => `
+  lista.innerHTML = dia.bloques.map(b => {
+    const podio = resultadosDe(b.prueba, b.categoria, b.genero);
+    return `
     <div class="prueba-item">
       <span class="prueba-hora">${escapeHtml(b.hora)}</span>
       <div class="prueba-info">
@@ -270,9 +350,21 @@ function renderProgramaLista(){
           ${b.genero ? `<span class="tag">${escapeHtml(b.genero)}</span>` : ''}
           <span class="tag tag-estado ${escapeAttr(b.estado)}">${escapeHtml(ESTADO_LABEL[b.estado] || b.estado)}</span>
         </div>
+        ${podio.length ? `
+          <div class="podio">
+            ${podio.map(p => `
+              <div class="podio-item">
+                <span>${LUGAR_MEDALLA[String(p.lugar)] || `${escapeHtml(p.lugar)}°`}</span>
+                <span class="podio-atleta">${escapeHtml(p.atleta)}</span>
+                <span class="podio-colegio">${escapeHtml(p.colegio)}</span>
+              </div>
+            `).join('')}
+          </div>
+        ` : ''}
       </div>
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 /* ---------------- En vivo ---------------- */
@@ -323,12 +415,23 @@ function renderEnVivo(){
   el.innerHTML = html;
 }
 
-/* ---------------- Medallas ---------------- */
+/* ---------------- Medallas (calculado desde Resultados) ---------------- */
+function computeMedallero(){
+  const counts = {};
+  DATA.colegios.forEach(c => { counts[c.corto] = { oro: 0, plata: 0, bronce: 0 }; });
+  (DATA.resultados || []).forEach(r => {
+    const bucket = counts[r.colegio];
+    if(!bucket) return; // colegio no reconocido (typo?) — se ignora
+    if(String(r.lugar) === '1') bucket.oro++;
+    else if(String(r.lugar) === '2') bucket.plata++;
+    else if(String(r.lugar) === '3') bucket.bronce++;
+  });
+  return DATA.colegios.map(c => ({ colegio: c, ...counts[c.corto] }));
+}
+
 function renderMedallas(){
   const body = document.getElementById('medal-body');
-  const rows = DATA.medallero
-    .map(m => ({ ...m, colegio: colegiosById[m.id] }))
-    .filter(m => m.colegio)
+  const rows = computeMedallero()
     .sort((a,b) => (b.oro - a.oro) || (b.plata - a.plata) || (b.bronce - a.bronce));
 
   body.innerHTML = rows.map(m => `
@@ -411,6 +514,15 @@ function escapeHtml(str){
 function escapeAttr(str){ return escapeHtml(str); }
 
 /* ---------------- Arranque ---------------- */
+document.getElementById('refresh-btn').addEventListener('click', async () => {
+  const btn = document.getElementById('refresh-btn');
+  btn.classList.add('is-loading');
+  await loadData();
+  btn.classList.remove('is-loading');
+});
+
+setInterval(renderUpdateBar, 10000); // refresca el texto "hace X min" aunque no haya datos nuevos
+
 loadData();
 setInterval(loadData, REFRESH_MS);
 

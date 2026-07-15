@@ -1,4 +1,4 @@
-const CACHE_NAME = 'atletismo-sea-v3';
+const CACHE_NAME = 'atletismo-sea-v5';
 const SHELL_FILES = [
   './',
   './index.html',
