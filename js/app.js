@@ -274,14 +274,48 @@ function renderInicio(){
 }
 
 let countdownTimer = null;
+
+function parseFechaFlexible(str){
+  if(!str) return null;
+  let d = new Date(str);
+  if(!isNaN(d.getTime())) return d;
+  // Si la celda de Sheets quedó como fecha (no texto), puede exportarse como "D/M/AAAA H:mm:ss"
+  const m = String(str).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})[ T](\d{1,2}):(\d{2})(?::(\d{2}))?/);
+  if(m){
+    const [, a, b, yyyy, hh, mm, ss] = m;
+    d = new Date(Number(yyyy), Number(b) - 1, Number(a), Number(hh), Number(mm), Number(ss || 0));
+    if(!isNaN(d.getTime())) return d;
+  }
+  return null;
+}
+
 function startCountdown(fechaInicioISO){
   if(countdownTimer) clearInterval(countdownTimer);
-  const target = new Date(fechaInicioISO).getTime();
+  const card = document.getElementById('countdown-card');
+  const liveMsg = document.getElementById('countdown-live');
+  const parsed = parseFechaFlexible(fechaInicioISO);
+
+  let errEl = document.getElementById('countdown-error');
+  if(!parsed){
+    card.querySelector('.countdown').hidden = true;
+    liveMsg.hidden = true;
+    if(!errEl){
+      errEl = document.createElement('p');
+      errEl.id = 'countdown-error';
+      errEl.className = 'countdown-live';
+      card.appendChild(errEl);
+    }
+    errEl.hidden = false;
+    errEl.textContent = `⚠️ No reconozco la fecha "${fechaInicioISO}". En la pestaña Evento, celda fechaInicio: formatea la columna como texto plano antes de escribirla (Formato → Número → Texto sin formato), o antepone un apóstrofo ' al escribirla.`;
+    return;
+  }
+  if(errEl) errEl.hidden = true;
+  card.querySelector('.countdown').hidden = false;
+
+  const target = parsed.getTime();
 
   function tick(){
     const diff = target - Date.now();
-    const card = document.getElementById('countdown-card');
-    const liveMsg = document.getElementById('countdown-live');
     if(diff <= 0){
       card.querySelector('.countdown').hidden = true;
       liveMsg.hidden = false;
